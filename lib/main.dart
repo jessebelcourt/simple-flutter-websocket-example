@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:web_socket_channel/io.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
-void main() {
+void main() async {
   runApp(MyApp());
 }
 
@@ -20,6 +22,11 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  @override
+  void initState() {
+    super.initState();
+    _initWebsocket();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,5 +38,17 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Text('yoooo'),
       ),
     );
+  }
+
+  void _initWebsocket() async {
+    final IOWebSocketChannel channel = await IOWebSocketChannel.connect("ws://localhost:40510");
+    channel.sink.add('Connected from Flutter!');
+    
+    channel.stream.listen((message) {
+      channel.sink.add("Message recieved from Flutter!");
+      print('message: $message');
+    });
+
+
   }
 }
